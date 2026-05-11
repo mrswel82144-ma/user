@@ -3,88 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تطبيق مناسف</title>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <title>متجر مناسف</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="light-mode">
 
-    <header class="main-header">
-        <div class="header-content">
-            <img src="https://c.top4top.io/p_37838ly851.png" alt="شعار" class="logo">
-            <h1>تطبيق مناسف</h1>
+    <div id="splash" class="splash-screen">
+        <div class="splash-content">
+            <img src="https://c.top4top.io/p_37838ly851.png" class="fade-in-logo">
+            <h1 class="fade-in-text">مناسف</h1>
         </div>
-        <p class="header-desc">اجمل المناسف يقدمها لك متجر مناسف لتزين بها مائدتك وبأنسب الاسعار</p>
+    </div>
+
+    <header class="store-header">
+        <div class="top-bar">
+            <img src="https://c.top4top.io/p_37838ly851.png" class="floating-logo">
+            <div class="store-info">
+                <h2>تطبيق مناسف</h2>
+                <p>اجمل المناسف يقدمها لك متجر مناسف لتزين بها مائدتك وبأنسب الاسعار</p>
+            </div>
+            <button class="search-trigger" onclick="toggleSearch()"><i class="fas fa-search"></i></button>
+        </div>
+        <div id="search-box" class="search-box">
+            <input type="text" id="product-search" placeholder="ابحث عن وجبة..." oninput="searchProducts(this.value)">
+        </div>
     </header>
 
-    <main class="app-content">
-        
-        <section id="home-tab" class="tab-content active">
-            <div class="search-bar">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="ابحث عن وجبتك المفضلة...">
-            </div>
+    <main class="content-area">
+        <section id="home-page" class="page active">
+            <div class="banner-slider" id="banner-container"></div>
             
-            <div class="categories">
-                <button class="cat-btn active">الكل</button>
-                <button class="cat-btn">مناسف لحم</button>
-                <button class="cat-btn">مناسف دجاج</button>
-                <button class="cat-btn">إضافات</button>
-            </div>
+            <div class="section-label">الأقسام</div>
+            <div class="categories-scroll" id="categories-container"></div>
 
-            <div class="products-grid" id="products-list">
+            <div class="section-label">أشهى الوجبات</div>
+            <div class="products-grid" id="products-container"></div>
+        </section>
+
+        <section id="cart-page" class="page">
+            <div class="cart-header">سلة المشتريات</div>
+            <div id="cart-items" class="cart-list"></div>
+            <div class="cart-footer">
+                <div class="price-row"><span>التوصيل:</span> <span id="delivery-cost">0</span> د.ع</div>
+                <div class="price-row total"><span>الإجمالي:</span> <span id="total-cost">0</span> د.ع</div>
+                <button class="checkout-btn" onclick="showCheckoutFields()">إتمام الطلب</button>
+            </div>
+            <div id="checkout-fields" class="modal-overlay">
+                <div class="modal-card">
+                    <h3>معلومات التوصيل</h3>
+                    <input type="text" id="user-name" placeholder="الاسم الكامل">
+                    <input type="tel" id="user-phone" placeholder="رقم الهاتف">
+                    <input type="text" id="user-address" placeholder="العنوان بالتفصيل">
+                    <button class="btn-confirm" onclick="sendOrder()">ارسال الطلب <i class="fab fa-whatsapp"></i></button>
+                    <button class="btn-cancel" onclick="document.getElementById('checkout-fields').style.display='none'">رجوع</button>
                 </div>
+            </div>
         </section>
 
-        <section id="cart-tab" class="tab-content">
-            <h2 class="section-title">سلة الطلبات</h2>
-            <div id="cart-items-container" class="cart-items">
-                <p class="empty-cart">السلة فارغة حالياً</p>
-            </div>
-            <div class="cart-summary">
-                <div class="total-row">
-                    <span>الإجمالي:</span>
-                    <span id="cart-total-price">0 د.أ</span>
+        <section id="profile-page" class="page">
+            <div class="profile-card">
+                <div class="user-icon"><i class="fas fa-user-circle"></i></div>
+                <input type="text" id="p-name" placeholder="الاسم">
+                <input type="text" id="p-address" placeholder="العنوان">
+                <input type="tel" id="p-phone" placeholder="رقم الهاتف">
+                <div class="theme-toggle">
+                    <span>الوضع الليلي</span>
+                    <input type="checkbox" id="dark-toggle" onchange="toggleTheme()">
                 </div>
-                <button class="checkout-btn" onclick="checkoutWhatsApp()">إتمام الطلب <i class="fab fa-whatsapp"></i></button>
+                <button class="btn-confirm" onclick="saveProfile()">حفظ البيانات</button>
             </div>
         </section>
-
-        <section id="profile-tab" class="tab-content">
-            <div class="profile-header">
-                <div class="profile-avatar"><i class="fas fa-user"></i></div>
-                <h3>أهلاً بك، زبوننا الكريم</h3>
-                <p>079XXXXXXX</p>
-            </div>
-            <ul class="profile-menu">
-                <li><i class="fas fa-list-alt"></i> طلباتي السابقة</li>
-                <li><i class="fas fa-cog"></i> الإعدادات</li>
-                <li><i class="fas fa-headset"></i> المساعدة والدعم</li>
-                <li class="logout"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</li>
-            </ul>
-        </section>
-
     </main>
 
     <nav class="bottom-nav">
-        <button class="nav-item" onclick="switchTab('profile', this)">
-            <i class="fas fa-user"></i>
-            <span>حسابي</span>
-        </button>
-        <button class="nav-item active" onclick="switchTab('home', this)">
-            <i class="fas fa-home"></i>
-            <span>الرئيسية</span>
-        </button>
-        <button class="nav-item" onclick="switchTab('cart', this)">
-            <div class="cart-icon-wrapper">
-                <i class="fas fa-shopping-cart"></i>
-                <span id="cart-badge" class="badge">0</span>
-            </div>
-            <span>السلة</span>
-        </button>
+        <button onclick="switchPage('profile')" id="btn-profile"><i class="fas fa-user"></i><span>البروفايل</span></button>
+        <button onclick="switchPage('home')" id="btn-home" class="active"><i class="fas fa-home"></i><span>الرئيسية</span></button>
+        <button onclick="switchPage('cart')" id="btn-cart"><i class="fas fa-shopping-basket"></i><span>السلة</span></button>
     </nav>
 
-    <script src="script.js"></script>
+    <div id="product-modal" class="modal-overlay">
+        <div class="modal-card details">
+            <img id="m-img" src="">
+            <h3 id="m-title"></h3>
+            <p id="m-desc"></p>
+            <div class="m-footer">
+                <span id="m-price"></span>
+                <button id="m-add-btn" class="btn-confirm">أضف للسلة <i class="fas fa-plus"></i></button>
+            </div>
+            <button class="btn-cancel" onclick="closeProductModal()">إغلاق</button>
+        </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
 </body>
 </html>
