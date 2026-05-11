@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>متجر مناسف</title>
+    <title>تطبيق مناسف</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
@@ -13,7 +13,7 @@
     <div id="splash" class="splash-screen">
         <div class="splash-content">
             <img src="https://c.top4top.io/p_37838ly851.png" class="fade-in-logo">
-            <h1 class="fade-in-text">مناسف</h1>
+            <h1 class="fade-in-text text-3d">مناسف</h1>
         </div>
     </div>
 
@@ -33,31 +33,34 @@
 
     <main class="content-area">
         <section id="home-page" class="page active">
-            <div class="banner-slider" id="banner-container"></div>
+            <div class="banner-slider" id="banner-container">
+                </div>
             
-            <div class="section-label">الأقسام</div>
-            <div class="categories-scroll" id="categories-container"></div>
+            <div class="categories-scroll" id="categories-container">
+                </div>
 
-            <div class="section-label">أشهى الوجبات</div>
-            <div class="products-grid" id="products-container"></div>
+            <div class="products-grid" id="products-container">
+                </div>
         </section>
 
         <section id="cart-page" class="page">
             <div class="cart-header">سلة المشتريات</div>
             <div id="cart-items" class="cart-list"></div>
+            
             <div class="cart-footer">
                 <div class="price-row"><span>التوصيل:</span> <span id="delivery-cost">0</span> د.ع</div>
                 <div class="price-row total"><span>الإجمالي:</span> <span id="total-cost">0</span> د.ع</div>
-                <button class="checkout-btn" onclick="showCheckoutFields()">إتمام الطلب</button>
+                <button class="checkout-btn" onclick="showCheckout()">إتمام الطلب</button>
             </div>
-            <div id="checkout-fields" class="modal-overlay">
+
+            <div id="checkout-fields" class="modal-overlay" style="display:none;">
                 <div class="modal-card">
                     <h3>معلومات التوصيل</h3>
-                    <input type="text" id="user-name" placeholder="الاسم الكامل">
-                    <input type="tel" id="user-phone" placeholder="رقم الهاتف">
-                    <input type="text" id="user-address" placeholder="العنوان بالتفصيل">
-                    <button class="btn-confirm" onclick="sendOrder()">ارسال الطلب <i class="fab fa-whatsapp"></i></button>
-                    <button class="btn-cancel" onclick="document.getElementById('checkout-fields').style.display='none'">رجوع</button>
+                    <input type="text" id="u-name" placeholder="الاسم الكامل">
+                    <input type="tel" id="u-phone" placeholder="رقم الهاتف">
+                    <input type="text" id="u-address" placeholder="العنوان بالتفصيل">
+                    <button class="btn-confirm mt-15" onclick="sendOrder()">تأكيد الطلب <i class="fab fa-whatsapp"></i></button>
+                    <button class="btn-cancel mt-15" onclick="document.getElementById('checkout-fields').style.display='none'">رجوع</button>
                 </div>
             </div>
         </section>
@@ -65,25 +68,33 @@
         <section id="profile-page" class="page">
             <div class="profile-card">
                 <div class="user-icon"><i class="fas fa-user-circle"></i></div>
-                <input type="text" id="p-name" placeholder="الاسم">
-                <input type="text" id="p-address" placeholder="العنوان">
+                <input type="text" id="p-name" placeholder="الاسم الكامل">
                 <input type="tel" id="p-phone" placeholder="رقم الهاتف">
+                <input type="text" id="p-address" placeholder="العنوان بالتفصيل">
+                
                 <div class="theme-toggle">
-                    <span>الوضع الليلي</span>
-                    <input type="checkbox" id="dark-toggle" onchange="toggleTheme()">
+                    <strong>الوضع الليلي</strong>
+                    <label class="switch"><input type="checkbox" id="dark-toggle" onchange="toggleTheme()"><span class="slider"></span></label>
                 </div>
-                <button class="btn-confirm" onclick="saveProfile()">حفظ البيانات</button>
+                
+                <button class="btn-confirm mt-15 w-100" onclick="saveProfile()">حفظ البيانات</button>
             </div>
         </section>
     </main>
 
     <nav class="bottom-nav">
-        <button onclick="switchPage('profile')" id="btn-profile"><i class="fas fa-user"></i><span>البروفايل</span></button>
-        <button onclick="switchPage('home')" id="btn-home" class="active"><i class="fas fa-home"></i><span>الرئيسية</span></button>
-        <button onclick="switchPage('cart')" id="btn-cart"><i class="fas fa-shopping-basket"></i><span>السلة</span></button>
+        <button onclick="switchPage('profile', this)" id="btn-profile"><i class="fas fa-user"></i><span>حسابي</span></button>
+        <button onclick="switchPage('home', this)" id="btn-home" class="active"><i class="fas fa-home"></i><span>الرئيسية</span></button>
+        <button onclick="switchPage('cart', this)" id="btn-cart">
+            <div style="position:relative;">
+                <i class="fas fa-shopping-basket"></i>
+                <span id="cart-badge" class="badge">0</span>
+            </div>
+            <span>السلة</span>
+        </button>
     </nav>
 
-    <div id="product-modal" class="modal-overlay">
+    <div id="product-modal" class="modal-overlay" style="display:none;">
         <div class="modal-card details">
             <img id="m-img" src="">
             <h3 id="m-title"></h3>
@@ -92,10 +103,10 @@
                 <span id="m-price"></span>
                 <button id="m-add-btn" class="btn-confirm">أضف للسلة <i class="fas fa-plus"></i></button>
             </div>
-            <button class="btn-cancel" onclick="closeProductModal()">إغلاق</button>
+            <button class="btn-cancel mt-15" onclick="document.getElementById('product-modal').style.display='none'">إغلاق</button>
         </div>
     </div>
 
-    <script type="module" src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
