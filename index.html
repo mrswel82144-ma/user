@@ -3,15 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>أناقة ستور</title>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <title>متجر مناسف</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+    <div id="splash-screen" class="splash-screen">
+        <img src="https://c.top4top.io/p_37838ly851.png" alt="شعار مناسف" class="splash-logo">
+        <div class="text-3d" style="font-size: 55px; margin-top: 15px; animation: fadeInUp 1s ease-out 0.5s forwards; opacity: 0;">مناسف</div>
+    </div>
+
     <header class="header">
-        <div class="logo">أناقة<span>ستور</span></div>
+        <div class="brand">
+            <img src="https://c.top4top.io/p_37838ly851.png" alt="لوجو مناسف" class="header-logo">
+            <div class="text-3d" style="font-size: 32px;">مناسف</div>
+        </div>
         <div class="cart-icon" onclick="window.toggleCart()">
             <i class="fas fa-shopping-bag"></i>
             <span id="cart-count">0</span>
@@ -20,15 +28,15 @@
 
     <div class="banner">
         <div class="banner-content">
-            <h1>أحدث عروض الموسم!</h1>
-            <p>تسوق أحدث المنتجات بأفضل الأسعار وبجودة عالية</p>
+            <h1 class="text-3d" style="font-size: 36px; margin-bottom: 10px;">أشهى المناسف بانتظارك!</h1>
+            <p>الجودة والأصالة بين يديك، اطلب الآن واستمتع بألذ طعم</p>
         </div>
     </div>
 
     <main class="products-section">
-        <h2 class="section-title">وصل حديثاً</h2>
+        <h2 class="section-title"><i class="fas fa-star" style="color:#f59e0b;"></i> القائمة</h2>
         <div id="loading" class="loading-state">
-            <i class="fas fa-spinner fa-spin"></i> جاري جلب المنتجات...
+            <i class="fas fa-spinner fa-spin"></i> جاري جلب ألذ الوجبات...
         </div>
         <div class="products-grid" id="products-container"></div>
     </main>
@@ -36,14 +44,14 @@
     <div class="cart-overlay" id="cart-overlay">
         <div class="cart-modal">
             <div class="cart-header">
-                <h3><i class="fas fa-shopping-cart"></i> سلة المشتريات</h3>
+                <h3><i class="fas fa-shopping-cart"></i> سلة الطلبات</h3>
                 <button class="close-cart" onclick="window.toggleCart()"><i class="fas fa-times"></i></button>
             </div>
             <div class="cart-items" id="cart-items"></div>
             <div class="cart-total">الإجمالي: <span id="total-price">0</span>$</div>
             
             <form id="checkout-form" class="checkout-form">
-                <h4>معلومات الشحن وإتمام الطلب</h4>
+                <h4><i class="fas fa-map-marker-alt"></i> معلومات التوصيل</h4>
                 <div class="input-group">
                     <i class="fas fa-user"></i>
                     <input type="text" id="cus-name" placeholder="الاسم الكامل" required>
@@ -53,7 +61,7 @@
                     <input type="tel" id="cus-phone" placeholder="رقم الهاتف" required>
                 </div>
                 <div class="input-group">
-                    <i class="fas fa-map-marker-alt"></i>
+                    <i class="fas fa-home"></i>
                     <input type="text" id="cus-address" placeholder="العنوان التفصيلي" required>
                 </div>
                 <button type="submit" id="btn-submit" class="btn-checkout">تأكيد وإرسال الطلب</button>
