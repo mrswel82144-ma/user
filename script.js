@@ -1,9 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
 import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
-// ==========================================
-// ⚙️ إعدادات المشروع بالكامل (CONFIG)
-// ==========================================
 const CONFIG = {
     FIREBASE_CONFIG: {
         apiKey: "AIzaSyD5AhcV4dky3MdBizPdrCkNHMb9_NF9Yko",
@@ -23,7 +20,17 @@ const db = getFirestore(app);
 
 let cart = [];
 
-// جلب المنتجات في الوقت الفعلي
+// إخفاء الشاشة الترحيبية بعد 2.5 ثانية بسلاسة
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        const splash = document.getElementById('splash-screen');
+        if(splash) {
+            splash.style.opacity = '0';
+            setTimeout(() => splash.style.visibility = 'hidden', 800);
+        }
+    }, 2500); 
+});
+
 const loadProducts = () => {
     const q = query(collection(db, CONFIG.COLLECTION_NAME), orderBy("createdAt", "desc"));
     const container = document.getElementById('products-container');
@@ -34,7 +41,7 @@ const loadProducts = () => {
         container.innerHTML = '';
         
         if(snapshot.empty) {
-            container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #94a3b8; padding: 30px; font-weight:bold;">المتجر فارغ حالياً. سيتم توفير المنتجات قريباً.</div>';
+            container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--primary); padding: 40px; font-weight:bold; font-size:18px;">القائمة فارغة حالياً. سيتم إضافة ألذ الأصناف قريباً.</div>';
             return;
         }
 
@@ -48,7 +55,7 @@ const loadProducts = () => {
                     <h3 class="product-title">${product.name}</h3>
                     <p class="product-price">${product.price}$</p>
                     <button class="btn-add" onclick="window.addToCart('${doc.id}', '${safeName}', ${product.price}, '${product.imageUrl}', this)">
-                        أضف للسلة <i class="fas fa-cart-plus"></i>
+                        إضافة للطلب <i class="fas fa-cart-plus"></i>
                     </button>
                 </div>
             `;
@@ -56,7 +63,6 @@ const loadProducts = () => {
     });
 };
 
-// دوال المتجر (استخدمنا window. لجعلها عامة داخل الموديول)
 window.toggleCart = () => {
     const modal = document.getElementById('cart-overlay');
     modal.classList.toggle('active');
@@ -68,9 +74,10 @@ window.addToCart = (id, name, price, image, btn) => {
     
     const originalHTML = btn.innerHTML;
     btn.innerHTML = '<i class="fas fa-check"></i> تمت الإضافة';
-    btn.style.background = '#10b981';
+    btn.style.background = '#f59e0b';
+    btn.style.borderColor = '#f59e0b';
     btn.style.color = 'white';
-    setTimeout(() => { btn.innerHTML = originalHTML; btn.style.background = ''; btn.style.color = ''; }, 1000);
+    setTimeout(() => { btn.innerHTML = originalHTML; btn.style.background = ''; btn.style.borderColor = ''; btn.style.color = ''; }, 1000);
 };
 
 window.removeFromCart = (index) => {
@@ -85,13 +92,13 @@ function updateCart() {
     cartItems.innerHTML = '';
     
     if(cart.length === 0) {
-        cartItems.innerHTML = '<div style="text-align:center; color:#94a3b8; margin-top:20px; font-weight:bold;">السلة فارغة</div>';
+        cartItems.innerHTML = '<div style="text-align:center; color:var(--primary); margin-top:20px; font-weight:bold;">سلة الطلبات فارغة</div>';
     } else {
         cart.forEach((item, index) => {
             total += parseFloat(item.price);
             cartItems.innerHTML += `
                 <div class="cart-item">
-                    <img src="${item.image}" style="width:55px; height:55px; border-radius:10px; object-fit:cover; margin-left:15px; border:1px solid #e2e8f0;">
+                    <img src="${item.image}" style="width:60px; height:60px; border-radius:12px; object-fit:cover; margin-left:15px; border:2px solid #bae6fd;">
                     <div class="item-info">
                         <div class="item-title">${item.name}</div>
                         <div class="item-price">${item.price}$</div>
@@ -104,10 +111,9 @@ function updateCart() {
     document.getElementById('total-price').innerText = total.toFixed(2);
 }
 
-// إرسال الطلب وحفظه في Firestore
 document.getElementById('checkout-form').addEventListener('submit', async function(e) {
     e.preventDefault();
-    if(cart.length === 0) { alert("يرجى إضافة منتجات للسلة أولاً!"); return; }
+    if(cart.length === 0) { alert("يرجى اختيار الوجبات للسلة أولاً!"); return; }
 
     const btnSubmit = document.getElementById('btn-submit');
     btnSubmit.disabled = true;
@@ -115,7 +121,7 @@ document.getElementById('checkout-form').addEventListener('submit', async functi
 
     try {
         await addDoc(collection(db, CONFIG.ORDERS_COLLECTION), {
-            orderNumber: 'ORD-' + Math.floor(Math.random() * 100000),
+            orderNumber: 'MN-' + Math.floor(Math.random() * 10000),
             customerName: document.getElementById('cus-name').value,
             customerPhone: document.getElementById('cus-phone').value,
             customerAddress: document.getElementById('cus-address').value,
@@ -124,7 +130,7 @@ document.getElementById('checkout-form').addEventListener('submit', async functi
             createdAt: serverTimestamp()
         });
         
-        alert("تم استلام طلبك بنجاح! سنتواصل معك قريباً.");
+        alert("بالعافية مقدماً! تم استلام طلبك بنجاح وسنتواصل معك للتوصيل.");
         cart = [];
         updateCart();
         window.toggleCart();
