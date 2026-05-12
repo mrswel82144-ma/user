@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تطبيق مناسف</title>
+    <link rel="manifest" href="./manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
@@ -13,7 +14,7 @@
     <div id="splash" class="splash-screen">
         <div class="splash-content">
             <img src="https://c.top4top.io/p_37838ly851.png" class="fade-in-logo">
-            <h1 class="fade-in-text text-3d">مناسف</h1>
+            <h1 class="fade-in-text text-3d" style="font-size:26px; text-align:center;">لسنا الوحيدون، لكننا الأفضل!</h1>
         </div>
     </div>
 
@@ -33,14 +34,9 @@
 
     <main class="content-area">
         <section id="home-page" class="page active">
-            <div class="banner-slider" id="banner-container">
-                </div>
-            
-            <div class="categories-scroll" id="categories-container">
-                </div>
-
-            <div class="products-grid" id="products-container">
-                </div>
+            <div class="banner-slider" id="banner-container"></div>
+            <div class="categories-scroll" id="categories-container"></div>
+            <div class="products-grid" id="products-container"></div>
         </section>
 
         <section id="cart-page" class="page">
@@ -59,7 +55,7 @@
                     <input type="text" id="u-name" placeholder="الاسم الكامل">
                     <input type="tel" id="u-phone" placeholder="رقم الهاتف">
                     <input type="text" id="u-address" placeholder="العنوان بالتفصيل">
-                    <button class="btn-confirm mt-15" onclick="sendOrder()">تأكيد الطلب <i class="fab fa-whatsapp"></i></button>
+                    <button class="btn-confirm mt-15" onclick="sendOrder()">تأكيد الطلب</button>
                     <button class="btn-cancel mt-15" onclick="document.getElementById('checkout-fields').style.display='none'">رجوع</button>
                 </div>
             </div>
@@ -104,6 +100,16 @@
                 <button id="m-add-btn" class="btn-confirm">أضف للسلة <i class="fas fa-plus"></i></button>
             </div>
             <button class="btn-cancel mt-15" onclick="document.getElementById('product-modal').style.display='none'">إغلاق</button>
+        </div>
+    </div>
+
+    <div id="pwa-modal" class="modal-overlay" style="display:none; z-index: 10000;">
+        <div class="modal-card details" style="text-align: center;">
+            <img src="./icon-192x192.png" style="width: 80px; height: 80px; margin: 0 auto; border-radius: 15px;">
+            <h3 style="margin-top: 15px;">تثبيت التطبيق</h3>
+            <p style="color: #64748b; font-size: 14px; margin-bottom: 15px;">قم بتثبيت التطبيق للحصول على تجربة أسرع وأفضل!</p>
+            <button class="btn-confirm w-100" onclick="installPWA()">ثبت التطبيق</button>
+            <button class="btn-cancel w-100 mt-15" onclick="skipPWA()">تخطي</button>
         </div>
     </div>
 
