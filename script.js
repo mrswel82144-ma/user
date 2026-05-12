@@ -17,32 +17,46 @@ const db = getFirestore(app);
 let currentProducts = [];
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 let deliveryPrice = 0;
+let slideIndex = 0;
 
 window.onload = () => {
     setTimeout(() => {
         let splash = document.getElementById('splash');
-        splash.style.opacity = '0';
-        setTimeout(() => splash.style.display = 'none', 800);
+        if(splash) { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 800); }
         loadProfile();
         updateCartUI();
     }, 2500);
 };
 
+// جلب البنرات بنظام الدوري (Infinite Loop)
 onSnapshot(collection(db, 'banners'), (snap) => {
     let bCont = document.getElementById('banner-container');
     bCont.innerHTML = '';
-    snap.forEach(docSnap => { bCont.innerHTML += `<img src="${docSnap.data().image}" class="banner-item">`; });
+    let banners = [];
+    snap.forEach(docSnap => { banners.push(docSnap.data().image); });
+    
+    banners.forEach((img, index) => {
+        let imgTag = document.createElement('img');
+        imgTag.src = img;
+        imgTag.className = `banner-item ${index === 0 ? 'active' : ''}`;
+        bCont.appendChild(imgTag);
+    });
+
+    startBannerSlider();
 });
 
-let bCont = document.getElementById('banner-container');
-let slideIndex = 0;
-setInterval(() => {
-    if(bCont.children.length > 0) {
-        slideIndex = (slideIndex + 1) % bCont.children.length;
-        bCont.scrollTo({ left: slideIndex * bCont.clientWidth, behavior: 'smooth' });
-    }
-}, 5000);
+function startBannerSlider() {
+    setInterval(() => {
+        let items = document.querySelectorAll('.banner-item');
+        if(items.length > 0) {
+            items[slideIndex].classList.remove('active');
+            slideIndex = (slideIndex + 1) % items.length; // العودة للأول تلقائياً
+            items[slideIndex].classList.add('active');
+        }
+    }, 5000);
+}
 
+// جلب باقي البيانات
 onSnapshot(collection(db, 'categories'), (snap) => {
     let cCont = document.getElementById('categories-container');
     cCont.innerHTML = '';
@@ -59,10 +73,7 @@ onSnapshot(collection(db, 'products'), (snap) => {
 });
 
 onSnapshot(doc(db, 'settings', 'delivery'), (docSnap) => {
-    if(docSnap.exists()) {
-        deliveryPrice = docSnap.data().price || 0;
-        updateCartUI();
-    }
+    if(docSnap.exists()) { deliveryPrice = docSnap.data().price || 0; updateCartUI(); }
 });
 
 function renderProducts(productsArray) {
@@ -75,8 +86,7 @@ function renderProducts(productsArray) {
                 <h4>${p.name}</h4>
                 <div class="price">${Number(p.price).toLocaleString()} د.ع</div>
                 <button class="btn-plus" onclick="event.stopPropagation(); addToCart('${p.id}')">+</button>
-            </div>
-        `;
+            </div>`;
     });
 }
 
@@ -87,28 +97,18 @@ window.switchPage = function(pageId, btn) {
     btn.classList.add('active');
 };
 
-window.toggleSearch = function() { document.getElementById('search-box').classList.toggle('active'); };
-window.searchProducts = function(val) { renderProducts(currentProducts.filter(p => p.name.includes(val))); };
-
-window.openProductDetails = function(id) {
-    let p = currentProducts.find(x => x.id === id);
-    if(p) {
-        document.getElementById('m-img').src = p.image;
-        document.getElementById('m-title').innerText = p.name;
-        document.getElementById('m-desc').innerText = p.desc;
-        document.getElementById('m-price').innerText = Number(p.price).toLocaleString() + ' د.ع';
-        document.getElementById('m-add-btn').onclick = () => { addToCart(p.id); document.getElementById('product-modal').style.display='none'; };
-        document.getElementById('product-modal').style.display = 'flex';
-    }
+window.toggleSearch = function() {
+    let box = document.getElementById('search-box');
+    box.style.display = box.style.display === 'none' ? 'block' : 'none';
 };
+
+window.searchProducts = function(val) { renderProducts(currentProducts.filter(p => p.name.includes(val))); };
 
 window.addToCart = function(id) {
     let p = currentProducts.find(x => x.id === id);
     let exist = cart.find(x => x.id === id);
     if(exist) exist.qty += 1; else cart.push({ ...p, qty: 1 });
-    
     localStorage.setItem('cart', JSON.stringify(cart)); updateCartUI();
-    
     let badge = document.getElementById('cart-badge');
     badge.style.transform = 'scale(1.5)'; setTimeout(() => badge.style.transform = 'scale(1)', 200);
 };
@@ -124,25 +124,10 @@ function updateCartUI() {
     let cList = document.getElementById('cart-items');
     cList.innerHTML = '';
     let total = 0; let qtyCount = 0;
-    
     cart.forEach(c => {
         let itemTotal = c.price * c.qty; total += itemTotal; qtyCount += c.qty;
-        cList.innerHTML += `
-            <div class="cart-item">
-                <img src="${c.image}">
-                <div class="cart-info">
-                    <h4 style="margin-bottom:5px;">${c.name}</h4>
-                    <strong style="color:var(--primary);">${Number(itemTotal).toLocaleString()} د.ع</strong>
-                </div>
-                <div style="display:flex; align-items:center; gap:10px;">
-                    <button class="qty-btn" onclick="changeQty('${c.id}', 1)">+</button>
-                    <strong>${c.qty}</strong>
-                    <button class="qty-btn" onclick="changeQty('${c.id}', -1)">-</button>
-                </div>
-            </div>
-        `;
+        cList.innerHTML += `<div class="cart-item"><img src="${c.image}"><div class="cart-info"><h4>${c.name}</h4><strong>${Number(itemTotal).toLocaleString()} د.ع</strong></div><div style="display:flex; align-items:center; gap:10px;"><button class="qty-btn" onclick="changeQty('${c.id}', 1)">+</button><strong>${c.qty}</strong><button class="qty-btn" onclick="changeQty('${c.id}', -1)">-</button></div></div>`;
     });
-    
     document.getElementById('cart-badge').innerText = qtyCount;
     document.getElementById('delivery-cost').innerText = Number(deliveryPrice).toLocaleString();
     document.getElementById('total-cost').innerText = Number(total > 0 ? total + deliveryPrice : 0).toLocaleString();
@@ -151,29 +136,26 @@ function updateCartUI() {
 window.showCheckout = function() {
     if(cart.length === 0) return alert('السلة فارغة!');
     document.getElementById('checkout-fields').style.display = 'flex';
-    document.getElementById('u-name').value = localStorage.getItem('userName') || '';
-    document.getElementById('u-phone').value = localStorage.getItem('userPhone') || '';
-    document.getElementById('u-address').value = localStorage.getItem('userAddress') || '';
 };
 
-// تعديل دالة الإرسال - فقط تحفظ في القاعدة وتظهر إشعار
 window.sendOrder = async function() {
     let name = document.getElementById('u-name').value;
     let phone = document.getElementById('u-phone').value;
     let address = document.getElementById('u-address').value;
     if(!name || !phone || !address) return alert('يرجى ملء كافة الحقول!');
-
     let total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0) + deliveryPrice;
+    await addDoc(collection(db, 'orders'), { name, phone, address, items: cart, total, status: 'pending', createdAt: Date.now() });
     
-    await addDoc(collection(db, 'orders'), {
-        name, phone, address, items: cart, total, status: 'pending', createdAt: Date.now()
-    });
-
-    alert('تم ارسال الطلب الى قسم الادارة بنجاح!');
+    // إظهار نافذة النجاح 3D
+    document.getElementById('site-url-display').innerText = window.location.href;
+    document.getElementById('success-modal').style.display = 'flex';
     
-    cart = []; localStorage.setItem('cart', JSON.stringify(cart));
-    updateCartUI();
+    cart = []; localStorage.setItem('cart', JSON.stringify(cart)); updateCartUI();
     document.getElementById('checkout-fields').style.display = 'none';
+};
+
+window.closeSuccessModal = function() {
+    document.getElementById('success-modal').style.display = 'none';
     switchPage('home', document.getElementById('btn-home'));
 };
 
@@ -199,29 +181,8 @@ window.toggleTheme = function() {
     localStorage.setItem('darkMode', isDark);
 };
 
-// ================= إعدادات PWA =================
+// PWA Logic
 let deferredPrompt;
-window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    document.getElementById('pwa-modal').style.display = 'flex';
-});
-
-window.installPWA = async function() {
-    if (deferredPrompt) {
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        deferredPrompt = null;
-        document.getElementById('pwa-modal').style.display = 'none';
-    }
-};
-
-window.skipPWA = function() {
-    document.getElementById('pwa-modal').style.display = 'none';
-};
-
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW Registration Failed', err));
-    });
-}
+window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; document.getElementById('pwa-modal').style.display = 'flex'; });
+window.installPWA = async () => { if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; document.getElementById('pwa-modal').style.display = 'none'; } };
+window.skipPWA = () => { document.getElementById('pwa-modal').style.display = 'none'; };
