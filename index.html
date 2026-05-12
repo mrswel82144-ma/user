@@ -14,7 +14,7 @@
     <div id="splash" class="splash-screen">
         <div class="splash-content">
             <img src="https://c.top4top.io/p_37838ly851.png" class="fade-in-logo">
-            <h1 class="fade-in-text text-3d" style="font-size:26px; text-align:center;">لسنا الوحيدون، لكننا الأفضل!</h1>
+            <h1 class="fade-in-text text-3d">لسنا الوحيدون، لكننا الأفضل!</h1>
         </div>
     </div>
 
@@ -23,12 +23,12 @@
             <img src="https://c.top4top.io/p_37838ly851.png" class="floating-logo">
             <div class="store-info">
                 <h2>تطبيق مناسف</h2>
-                <p>اجمل المناسف يقدمها لك متجر مناسف لتزين بها مائدتك وبأنسب الاسعار</p>
+                <p>اجمل المناسف يقدمها لك متجر مناسف وبأنسب الاسعار</p>
             </div>
             <button class="search-trigger" onclick="toggleSearch()"><i class="fas fa-search"></i></button>
         </div>
-        <div id="search-box" class="search-box">
-            <input type="text" id="product-search" placeholder="ابحث عن وجبة..." oninput="searchProducts(this.value)">
+        <div id="search-box" class="search-box" style="display:none; padding:10px;">
+            <input type="text" id="product-search" placeholder="ابحث عن وجبة..." oninput="searchProducts(this.value)" style="width:100%; padding:10px; border-radius:10px; border:1px solid var(--primary);">
         </div>
     </header>
 
@@ -42,76 +42,67 @@
         <section id="cart-page" class="page">
             <div class="cart-header">سلة المشتريات</div>
             <div id="cart-items" class="cart-list"></div>
-            
             <div class="cart-footer">
                 <div class="price-row"><span>التوصيل:</span> <span id="delivery-cost">0</span> د.ع</div>
                 <div class="price-row total"><span>الإجمالي:</span> <span id="total-cost">0</span> د.ع</div>
-                <button class="checkout-btn" onclick="showCheckout()">إتمام الطلب</button>
+                <button class="checkout-btn" style="width:100%; background:#10b981; color:white; padding:15px; border:none; border-radius:12px; font-weight:bold; cursor:pointer;" onclick="showCheckout()">إتمام الطلب</button>
             </div>
 
             <div id="checkout-fields" class="modal-overlay" style="display:none;">
                 <div class="modal-card">
                     <h3>معلومات التوصيل</h3>
-                    <input type="text" id="u-name" placeholder="الاسم الكامل">
-                    <input type="tel" id="u-phone" placeholder="رقم الهاتف">
-                    <input type="text" id="u-address" placeholder="العنوان بالتفصيل">
-                    <button class="btn-confirm mt-15" onclick="sendOrder()">تأكيد الطلب</button>
-                    <button class="btn-cancel mt-15" onclick="document.getElementById('checkout-fields').style.display='none'">رجوع</button>
+                    <input type="text" id="u-name" placeholder="الاسم الكامل" style="padding:12px; border-radius:10px; border:1px solid #ddd;">
+                    <input type="tel" id="u-phone" placeholder="رقم الهاتف" style="padding:12px; border-radius:10px; border:1px solid #ddd;">
+                    <input type="text" id="u-address" placeholder="العنوان بالتفصيل" style="padding:12px; border-radius:10px; border:1px solid #ddd;">
+                    <button class="btn-confirm" style="background:var(--primary); color:white; padding:12px; border:none; border-radius:10px; font-weight:bold;" onclick="sendOrder()">تأكيد الطلب</button>
+                    <button class="btn-cancel" style="background:#ef4444; color:white; padding:12px; border:none; border-radius:10px; font-weight:bold;" onclick="document.getElementById('checkout-fields').style.display='none'">رجوع</button>
                 </div>
             </div>
         </section>
 
         <section id="profile-page" class="page">
-            <div class="profile-card">
-                <div class="user-icon"><i class="fas fa-user-circle"></i></div>
-                <input type="text" id="p-name" placeholder="الاسم الكامل">
-                <input type="tel" id="p-phone" placeholder="رقم الهاتف">
-                <input type="text" id="p-address" placeholder="العنوان بالتفصيل">
-                
-                <div class="theme-toggle">
+            <div class="profile-card" style="background:var(--card); padding:20px; border-radius:20px; text-align:center;">
+                <div class="user-icon" style="font-size:50px; color:var(--primary); margin-bottom:15px;"><i class="fas fa-user-circle"></i></div>
+                <input type="text" id="p-name" placeholder="الاسم الكامل" style="width:100%; padding:12px; margin-bottom:10px; border-radius:10px; border:1px solid #ddd;">
+                <input type="tel" id="p-phone" placeholder="رقم الهاتف" style="width:100%; padding:12px; margin-bottom:10px; border-radius:10px; border:1px solid #ddd;">
+                <input type="text" id="p-address" placeholder="العنوان بالتفصيل" style="width:100%; padding:12px; margin-bottom:15px; border-radius:10px; border:1px solid #ddd;">
+                <div class="theme-toggle" style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:var(--bg); border-radius:10px;">
                     <strong>الوضع الليلي</strong>
                     <label class="switch"><input type="checkbox" id="dark-toggle" onchange="toggleTheme()"><span class="slider"></span></label>
                 </div>
-                
-                <button class="btn-confirm mt-15 w-100" onclick="saveProfile()">حفظ البيانات</button>
+                <button class="btn-confirm" style="width:100%; background:var(--primary); color:white; padding:12px; border:none; border-radius:10px; font-weight:bold; margin-top:15px;" onclick="saveProfile()">حفظ البيانات</button>
             </div>
         </section>
     </main>
+
+    <div id="success-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-card success-card">
+            <div class="success-icon"><i class="fas fa-check-circle"></i></div>
+            <h2 style="color:#10b981;">تم بنجاح!</h2>
+            <p style="font-weight:bold;">تم ارسال الطلب الى قسم الادارة بنجاح!</p>
+            <span id="site-url-display" class="site-link"></span>
+            <button class="btn-confirm" style="background:#10b981; color:white; padding:12px; border:none; border-radius:10px; font-weight:bold; width:100%; margin-top:10px;" onclick="closeSuccessModal()">حسناً</button>
+        </div>
+    </div>
+
+    <div id="pwa-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-card" style="text-align:center;">
+            <img src="./icon-192x192.png" style="width:80px; margin:0 auto; border-radius:15px;">
+            <h3>تثبيت التطبيق</h3>
+            <p>قم بتثبيت التطبيق لتجربة أسرع وأفضل!</p>
+            <button class="btn-confirm" style="background:var(--primary); color:white; padding:12px; border:none; border-radius:10px; font-weight:bold; width:100%;" onclick="installPWA()">تثبيت الآن</button>
+            <button class="btn-cancel" style="background:#64748b; color:white; padding:12px; border:none; border-radius:10px; font-weight:bold; width:100%; margin-top:10px;" onclick="skipPWA()">تخطي</button>
+        </div>
+    </div>
 
     <nav class="bottom-nav">
         <button onclick="switchPage('profile', this)" id="btn-profile"><i class="fas fa-user"></i><span>حسابي</span></button>
         <button onclick="switchPage('home', this)" id="btn-home" class="active"><i class="fas fa-home"></i><span>الرئيسية</span></button>
         <button onclick="switchPage('cart', this)" id="btn-cart">
-            <div style="position:relative;">
-                <i class="fas fa-shopping-basket"></i>
-                <span id="cart-badge" class="badge">0</span>
-            </div>
+            <div style="position:relative;"><i class="fas fa-shopping-basket"></i><span id="cart-badge" class="badge">0</span></div>
             <span>السلة</span>
         </button>
     </nav>
-
-    <div id="product-modal" class="modal-overlay" style="display:none;">
-        <div class="modal-card details">
-            <img id="m-img" src="">
-            <h3 id="m-title"></h3>
-            <p id="m-desc"></p>
-            <div class="m-footer">
-                <span id="m-price"></span>
-                <button id="m-add-btn" class="btn-confirm">أضف للسلة <i class="fas fa-plus"></i></button>
-            </div>
-            <button class="btn-cancel mt-15" onclick="document.getElementById('product-modal').style.display='none'">إغلاق</button>
-        </div>
-    </div>
-
-    <div id="pwa-modal" class="modal-overlay" style="display:none; z-index: 10000;">
-        <div class="modal-card details" style="text-align: center;">
-            <img src="./icon-192x192.png" style="width: 80px; height: 80px; margin: 0 auto; border-radius: 15px;">
-            <h3 style="margin-top: 15px;">تثبيت التطبيق</h3>
-            <p style="color: #64748b; font-size: 14px; margin-bottom: 15px;">قم بتثبيت التطبيق للحصول على تجربة أسرع وأفضل!</p>
-            <button class="btn-confirm w-100" onclick="installPWA()">ثبت التطبيق</button>
-            <button class="btn-cancel w-100 mt-15" onclick="skipPWA()">تخطي</button>
-        </div>
-    </div>
 
     <script type="module" src="script.js"></script>
 </body>
