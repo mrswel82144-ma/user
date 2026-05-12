@@ -18,7 +18,6 @@ let currentProducts = [];
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 let deliveryPrice = 0;
 
-// إخفاء الشاشة الترحيبية
 window.onload = () => {
     setTimeout(() => {
         let splash = document.getElementById('splash');
@@ -29,18 +28,12 @@ window.onload = () => {
     }, 2500);
 };
 
-// ================== جلب البيانات من فايربيس (Real-time) ==================
-
-// جلب البنرات
 onSnapshot(collection(db, 'banners'), (snap) => {
     let bCont = document.getElementById('banner-container');
     bCont.innerHTML = '';
-    snap.forEach(docSnap => {
-        bCont.innerHTML += `<img src="${docSnap.data().image}" class="banner-item">`;
-    });
+    snap.forEach(docSnap => { bCont.innerHTML += `<img src="${docSnap.data().image}" class="banner-item">`; });
 });
 
-// تحريك البنرات كل 5 ثواني
 let bCont = document.getElementById('banner-container');
 let slideIndex = 0;
 setInterval(() => {
@@ -50,7 +43,6 @@ setInterval(() => {
     }
 }, 5000);
 
-// جلب الأقسام
 onSnapshot(collection(db, 'categories'), (snap) => {
     let cCont = document.getElementById('categories-container');
     cCont.innerHTML = '';
@@ -60,24 +52,18 @@ onSnapshot(collection(db, 'categories'), (snap) => {
     });
 });
 
-// جلب المنتجات
 onSnapshot(collection(db, 'products'), (snap) => {
     currentProducts = [];
-    snap.forEach(docSnap => {
-        currentProducts.push({ id: docSnap.id, ...docSnap.data() });
-    });
+    snap.forEach(docSnap => { currentProducts.push({ id: docSnap.id, ...docSnap.data() }); });
     renderProducts(currentProducts);
 });
 
-// جلب سعر التوصيل
 onSnapshot(doc(db, 'settings', 'delivery'), (docSnap) => {
     if(docSnap.exists()) {
         deliveryPrice = docSnap.data().price || 0;
         updateCartUI();
     }
 });
-
-// ================== واجهة المتجر الأساسية ==================
 
 function renderProducts(productsArray) {
     let pCont = document.getElementById('products-container');
@@ -101,14 +87,8 @@ window.switchPage = function(pageId, btn) {
     btn.classList.add('active');
 };
 
-window.toggleSearch = function() {
-    document.getElementById('search-box').classList.toggle('active');
-};
-
-window.searchProducts = function(val) {
-    let filtered = currentProducts.filter(p => p.name.includes(val));
-    renderProducts(filtered);
-};
+window.toggleSearch = function() { document.getElementById('search-box').classList.toggle('active'); };
+window.searchProducts = function(val) { renderProducts(currentProducts.filter(p => p.name.includes(val))); };
 
 window.openProductDetails = function(id) {
     let p = currentProducts.find(x => x.id === id);
@@ -122,16 +102,12 @@ window.openProductDetails = function(id) {
     }
 };
 
-// ================== السلة والطلبات ==================
-
 window.addToCart = function(id) {
     let p = currentProducts.find(x => x.id === id);
     let exist = cart.find(x => x.id === id);
-    if(exist) exist.qty += 1;
-    else cart.push({ ...p, qty: 1 });
+    if(exist) exist.qty += 1; else cart.push({ ...p, qty: 1 });
     
-    localStorage.setItem('cart', JSON.stringify(cart));
-    updateCartUI();
+    localStorage.setItem('cart', JSON.stringify(cart)); updateCartUI();
     
     let badge = document.getElementById('cart-badge');
     badge.style.transform = 'scale(1.5)'; setTimeout(() => badge.style.transform = 'scale(1)', 200);
@@ -141,20 +117,16 @@ window.changeQty = function(id, amount) {
     let item = cart.find(x => x.id === id);
     item.qty += amount;
     if(item.qty <= 0) cart = cart.filter(x => x.id !== id);
-    localStorage.setItem('cart', JSON.stringify(cart));
-    updateCartUI();
+    localStorage.setItem('cart', JSON.stringify(cart)); updateCartUI();
 };
 
 function updateCartUI() {
     let cList = document.getElementById('cart-items');
     cList.innerHTML = '';
-    let total = 0;
-    let qtyCount = 0;
+    let total = 0; let qtyCount = 0;
     
     cart.forEach(c => {
-        let itemTotal = c.price * c.qty;
-        total += itemTotal;
-        qtyCount += c.qty;
+        let itemTotal = c.price * c.qty; total += itemTotal; qtyCount += c.qty;
         cList.innerHTML += `
             <div class="cart-item">
                 <img src="${c.image}">
@@ -173,8 +145,7 @@ function updateCartUI() {
     
     document.getElementById('cart-badge').innerText = qtyCount;
     document.getElementById('delivery-cost').innerText = Number(deliveryPrice).toLocaleString();
-    let finalTotal = total > 0 ? total + deliveryPrice : 0;
-    document.getElementById('total-cost').innerText = Number(finalTotal).toLocaleString();
+    document.getElementById('total-cost').innerText = Number(total > 0 ? total + deliveryPrice : 0).toLocaleString();
 }
 
 window.showCheckout = function() {
@@ -185,6 +156,7 @@ window.showCheckout = function() {
     document.getElementById('u-address').value = localStorage.getItem('userAddress') || '';
 };
 
+// تعديل دالة الإرسال - فقط تحفظ في القاعدة وتظهر إشعار
 window.sendOrder = async function() {
     let name = document.getElementById('u-name').value;
     let phone = document.getElementById('u-phone').value;
@@ -193,27 +165,17 @@ window.sendOrder = async function() {
 
     let total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0) + deliveryPrice;
     
-    // إرسال الطلب لقاعدة بيانات فايربيس (ليظهر في الأدمن)
     await addDoc(collection(db, 'orders'), {
         name, phone, address, items: cart, total, status: 'pending', createdAt: Date.now()
     });
 
-    // تحويل للواتساب
-    let msg = `*طلب جديد من تطبيق مناسف*\n\nالاسم: ${name}\nالرقم: ${phone}\nالعنوان: ${address}\n\n*الطلب:*\n`;
-    cart.forEach(c => msg += `- ${c.qty}x ${c.name} (${Number(c.price * c.qty).toLocaleString()} د.ع)\n`);
-    msg += `\nالتوصيل: ${Number(deliveryPrice).toLocaleString()} د.ع\n*الإجمالي: ${Number(total).toLocaleString()} د.ع*`;
+    alert('تم ارسال الطلب الى قسم الادارة بنجاح!');
     
-    let whatsappUrl = `https://wa.me/964700000000?text=${encodeURIComponent(msg)}`; // استبدل برقم هاتفك
-    window.open(whatsappUrl, '_blank');
-    
-    // تفريغ السلة والرجوع للرئيسية
     cart = []; localStorage.setItem('cart', JSON.stringify(cart));
     updateCartUI();
     document.getElementById('checkout-fields').style.display = 'none';
     switchPage('home', document.getElementById('btn-home'));
 };
-
-// ================== البروفايل والوضع الليلي ==================
 
 window.saveProfile = function() {
     localStorage.setItem('userName', document.getElementById('p-name').value);
@@ -226,16 +188,40 @@ function loadProfile() {
     document.getElementById('p-name').value = localStorage.getItem('userName') || '';
     document.getElementById('p-phone').value = localStorage.getItem('userPhone') || '';
     document.getElementById('p-address').value = localStorage.getItem('userAddress') || '';
-    
     if(localStorage.getItem('darkMode') === 'true') {
-        document.getElementById('dark-toggle').checked = true;
-        document.body.classList.add('dark-mode');
+        document.getElementById('dark-toggle').checked = true; document.body.classList.add('dark-mode');
     }
 }
 
 window.toggleTheme = function() {
     let isDark = document.getElementById('dark-toggle').checked;
-    if(isDark) document.body.classList.add('dark-mode');
-    else document.body.classList.remove('dark-mode');
+    if(isDark) document.body.classList.add('dark-mode'); else document.body.classList.remove('dark-mode');
     localStorage.setItem('darkMode', isDark);
 };
+
+// ================= إعدادات PWA =================
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    document.getElementById('pwa-modal').style.display = 'flex';
+});
+
+window.installPWA = async function() {
+    if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        deferredPrompt = null;
+        document.getElementById('pwa-modal').style.display = 'none';
+    }
+};
+
+window.skipPWA = function() {
+    document.getElementById('pwa-modal').style.display = 'none';
+};
+
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW Registration Failed', err));
+    });
+}
